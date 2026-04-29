@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopData Cam - Collecte & Analyse E-commerce</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <style>
+        * { font-family: 'Poppins', sans-serif; }
+        body { background: #e8f0fe; margin: 0; }
+        .navbar { background: linear-gradient(135deg, #1a73e8, #4285f4); box-shadow: 0 2px 20px rgba(26,115,232,.4); }
+        .navbar-brand { font-weight: 700; font-size: 1.4rem; color: white !important; cursor: pointer; }
+        .navbar-brand i { margin-right: 8px; }
+        .nav-link { color: rgba(255,255,255,.85) !important; font-weight: 500; }
+        .nav-link.active, .nav-link:hover { color: white !important; }
+        .nav-pill { background: rgba(255,255,255,.2); border-radius: 20px; padding: 6px 16px !important; cursor: pointer; }
+        .nav-pill.active { background: rgba(255,255,255,.35); }
+        .section-content.d-none { display: none !important; }
+        .hero {
+            background-image: url('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1600&q=80');
+            background-size: cover; background-position: center; color: white;
+            padding: 70px 0 100px; position: relative; overflow: hidden;
+        }
+        .hero::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 30, 80, 0.8); z-index: 0; }
+        .hero .container { position: relative; z-index: 1; }
+        .hero-badge { background: rgba(255,255,255,.2); border: 1px solid rgba(255,255,255,.35); border-radius: 30px; padding: 7px 18px; font-size: .85rem; display: inline-block; margin-bottom: 14px; }
+        .hero h1 { font-size: 2.2rem; font-weight: 700; }
+        .mini-stat { background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.35); border-radius: 14px; padding: 14px 22px; text-align: center; backdrop-filter: blur(4px); }
+        .mini-stat .v { font-size: 1.6rem; font-weight: 700; }
+        .mini-stat .l { font-size: .75rem; opacity: .85; }
+        .med-card { background: white; border-radius: 18px; overflow: hidden; box-shadow: 0 8px 30px rgba(26,115,232,.13); transition: .3s; border: 2px solid transparent; }
+        .med-card:hover { transform: translateY(-6px); border-color: #4285f4; }
+        .med-card img { width: 100%; height: 160px; object-fit: cover; }
+        .med-card .cap { padding: 14px; text-align: center; }
+        .med-card .cap .t { font-weight: 700; color: #1a73e8; font-size: .9rem; }
+        .med-card .cap .s { font-size: .75rem; color: #636e72; margin-top: 3px; }
+        .sec { background: linear-gradient(135deg, #1a73e8, #4285f4); color: white; border-radius: 12px; padding: 12px 20px; margin-bottom: 20px; font-weight: 600; font-size: .92rem; }
+        .imc-box { background: linear-gradient(135deg, #e8f0fe, #f0f4ff); border-radius: 14px; padding: 18px; text-align: center; border: 2px dashed #8ab4f8; }
+        .imc-val { font-size: 2rem; font-weight: 700; color: #1a73e8; }
+        .patho-label { background: #e8f0fe; border: 2px solid #d2e3fc; border-radius: 12px; padding: 10px 14px; cursor: pointer; transition: .2s; display: flex; align-items: center; gap: 8px; font-size: .87rem; }
+        .patho-label:hover { border-color: #1a73e8; background: #d2e3fc; }
+        input[type="checkbox"] { accent-color: #1a73e8; width: 16px; height: 16px; }
+        .btn-submit { background: linear-gradient(135deg, #1a73e8, #4285f4); border: none; color: white; border-radius: 14px; padding: 15px 40px; font-weight: 600; font-size: 1rem; width: 100%; transition: .2s; }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(26,115,232,.45); color: white; }
+        .alert-ok { background: linear-gradient(135deg, #1a73e8, #4285f4); color: white; border: none; border-radius: 14px; padding: 16px 20px; }
+        .info-section {
+            background-image: url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1600&q=80');
+            background-size: cover; background-position: center; color: white; padding: 70px 0; position: relative;
+        }
+        .info-section::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(10, 20, 50, 0.85); z-index: 0; }
+        .info-section .container { position: relative; z-index: 1; }
+        .info-card { background: rgba(255,255,255,.1); border-radius: 16px; padding: 24px; text-align: center; border: 1px solid rgba(255,255,255,.2); transition: .3s; backdrop-filter: blur(4px); }
+        .info-card:hover { background: rgba(255,255,255,.18); transform: translateY(-5px); }
+        .info-card .ic { font-size: 2.5rem; margin-bottom: 12px; }
+        .info-card h5 { font-weight: 700; font-size: .95rem; margin-bottom: 6px; }
+        .info-card p { font-size: .8rem; opacity: .85; margin: 0; }
+        .card { border-radius: 20px; border: none; box-shadow: 0 8px 24px rgba(0,0,0,0.05); background: white; }
+        .plot-container { min-height: 400px; }
+        .table-patients { font-size: 0.85rem; background: white; border-radius: 16px; overflow: hidden; }
+        .table-patients thead { background: linear-gradient(135deg, #1a73e8, #4285f4); color: white; }
+        .table-patients th, .table-patients td { vertical-align: middle; padding: 8px 6px; white-space: nowrap; }
+        .patient-row:hover { background-color: #e8f0fe; }
+        .badge-patho { background: #d2e3fc; color: #1a73e8; font-size: 0.7rem; margin-right: 2px; }
+        footer { background: #1a1a2e; color: rgba(255,255,255,.7); text-align: center; padding: 22px; font-size: .85rem; margin-top: 60px; }
+        footer span { color: #4285f4; }
+        .ml-card { background: #f8fbff; border-left: 5px solid #1a73e8; margin-bottom: 25px; }
+        .result-text { background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 0 12px 12px 0; padding: 15px 20px; font-size: 0.9rem; color: #856404; }
+        .modal-content { border-radius: 24px; }
+        .modal-header { background: linear-gradient(135deg, #1a73e8, #4285f4); color: white; border-bottom: none; border-radius: 24px 24px 0 0; }
+        .modal-header .btn-close { filter: invert(1); }
+        .error-message { color: #dc3545; font-size: 0.78rem; margin-top: 3px; display: none; }
+        .error-message.visible { display: block; }
+        .success-message { color: #28a745; font-size: 0.78rem; margin-top: 3px; display: none; }
+        .success-message.visible { display: block; }
+        .btn-clean { background: #ff6b6b; color: white; border: none; border-radius: 12px; padding: 10px 20px; font-weight: 600; }
+        .btn-clean:hover { background: #ee5a24; color: white; }
+
+        /* Style tableau statistiques (comme capture) */
+        .stats-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.9rem; }
+        .stats-table th { background: #1a73e8; color: white; padding: 10px 8px; text-align: center; font-weight: 600; }
+        .stats-table td { padding: 8px; text-align: center; border: 1px solid #e0e0e0; }
+        .stats-table tr:nth-child(even) { background: #f8fbff; }
+        .stats-table tr:hover { background: #e8f0fe; }
+        .stats-table td:first-child { text-align: left; font-weight: 500; }
+
+        /* Style sous-groupes */
+        .subgroup-card { background: white; border: 1px solid #e0e0e0; border-radius: 10px; padding: 12px 16px; margin-bottom: 10px; }
+        .subgroup-card strong { color: #1a73e8; }
+        .subgroup-title { color: #1a73e8; font-weight: 700; font-size: 1.1rem; margin: 25px 0 15px 0; border-bottom: 2px solid #4285f4; padding-bottom: 8px; }
+
+        /* Style rapport auto */
+        .rapport-box { background: #fff3cd; border: 1px solid #ffc107; border-radius: 10px; padding: 15px 20px; margin-top: 20px; }
+        .rapport-box i { color: #f39c12; margin-right: 8px; }
+        .rapport-title { color: #1a73e8; font-weight: 700; font-size: 1.1rem; margin: 25px 0 15px 0; border-bottom: 2px solid #4285f4; padding-bottom: 8px; }
+
+        /* Carrousels */
+        .carousel-section { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 8px 24px rgba(0,0,0,0.05); margin-bottom: 30px; }
+        .carousel-section h4 { color: #1a73e8; font-weight: 700; margin-bottom: 20px; }
+        .carousel-container { position: relative; overflow: hidden; }
+        .carousel-track { display: flex; transition: transform 0.5s ease-in-out; }
+        .carousel-card { min-width: 280px; margin: 0 10px; background: linear-gradient(135deg, #e8f0fe, #f0f4ff); border-radius: 16px; padding: 20px; text-align: center; border: 2px solid #d2e3fc; }
+        .carousel-card:hover { border-color: #1a73e8; transform: translateY(-4px); }
+        .carousel-card .car-icon { font-size: 2.5rem; margin-bottom: 10px; color: #1a73e8; }
+        .carousel-card .car-value { font-size: 1.5rem; font-weight: 700; color: #1a73e8; }
+        .carousel-card .car-label { font-size: 0.85rem; color: #636e72; margin-top: 5px; }
+        .carousel-card .car-sub { font-size: 0.75rem; color: #4285f4; margin-top: 8px; }
+        .carousel-btn { position: absolute; top: 50%; transform: translateY(-50%); background: #1a73e8; color: white; border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; font-size: 1.2rem; z-index: 10; }
+        .carousel-btn:hover { background: #1557b0; }
+        .carousel-btn.prev { left: 0; } .carousel-btn.next { right: 0; }
+        .carousel-dots { text-align: center; margin-top: 15px; }
+        .carousel-dots .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #d2e3fc; margin: 0 5px; cursor: pointer; }
+        .carousel-dots .dot.active { background: #1a73e8; width: 25px; border-radius: 10px; }
+        .carousel-card.cat-card .car-value, .carousel-card.cat-card .car-icon { color: #e67e22; }
+
+        .btn-action { padding: 4px 10px; font-size: 0.8rem; border-radius: 8px; }
+        .btn-edit { background: #4285f4; color: white; border: none; }
+        .btn-edit:hover { background: #1a73e8; }
+        .btn-delete { background: #ea4335; color: white; border: none; }
+        .btn-delete:hover { background: #c5221f; }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg">
+    <div class="container">
+        <a class="navbar-brand" onclick="showAccueil()"><i class="bi bi-cart-fill"></i>ShopData Cam</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav"><span class="navbar-toggler-icon"></span></button>
+        <div class="collapse navbar-collapse" id="nav">
+            <ul class="navbar-nav ms-auto gap-2">
+                <li class="nav-item"><a class="nav-link nav-pill" onclick="showAccueil()"><i class="bi bi-house-door-fill me-1"></i>Accueil</a></li>
+                <li class="nav-item"><a class="nav-link nav-pill" data-bs-toggle="modal" data-bs-target="#collecteModal" href="#"><i class="bi bi-bag-plus me-1"></i>Nouvelle Vente</a></li>
+                <li class="nav-item"><a class="nav-link nav-pill" data-section="section-dashboard" onclick="showSection('section-dashboard')"><i class="bi bi-bar-chart-line me-1"></i>Tableau de bord</a></li>
+                <li class="nav-item"><a class="nav-link nav-pill" data-section="section-statistiques" onclick="showSection('section-statistiques')"><i class="bi bi-calculator me-1"></i>Statistiques</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- MODAL VENTE -->
+<div class="modal fade" id="collecteModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="collecteModalLabel"><i class="bi bi-shop me-2"></i>Formulaire de vente</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="alertBoxModal" class="d-none mb-4"></div>
+                <form id="healthFormModal" novalidate>
+                    <input type="hidden" id="editIdModal">
+                    <div class="sec"><i class="bi bi-person-fill me-2"></i>Informations client</div>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4"><label class="form-label">Nom client</label><input type="text" class="form-control" id="nomModal" placeholder="Ex: Jean Dupont"><div class="error-message" id="errorNomModal"></div><div class="success-message" id="successNomModal"></div></div>
+                        <div class="col-md-4"><label class="form-label">Age <span class="text-danger">*</span></label><input type="number" class="form-control" id="ageModal" placeholder="Ex: 34" required><div class="error-message" id="errorAgeModal"></div><div class="success-message" id="successAgeModal"></div></div>
+                        <div class="col-md-4"><label class="form-label">Sexe <span class="text-danger">*</span></label><select class="form-select" id="sexeModal" required><option value="">-- Choisir --</option><option value="Homme">Homme</option><option value="Femme">Femme</option></select><div class="error-message" id="errorSexeModal"></div><div class="success-message" id="successSexeModal"></div></div>
+                        <div class="col-md-6"><label class="form-label">Ville</label><input type="text" class="form-control" id="communeModal" placeholder="Ex: Yaounde"><div class="error-message" id="errorCommuneModal"></div><div class="success-message" id="successCommuneModal"></div></div>
+                        <div class="col-md-6"><label class="form-label">Paiement <span class="text-danger">*</span></label><select class="form-select" id="paiementModal" required><option value="">-- Choisir --</option><option value="Mobile Money">Mobile Money</option><option value="Carte bancaire">Carte bancaire</option><option value="Especes">Especes</option><option value="Virement">Virement</option></select><div class="error-message" id="errorPaiementModal"></div><div class="success-message" id="successPaiementModal"></div></div>
+                    </div>
+                    <div class="sec"><i class="bi bi-cash-stack me-2"></i>Details commande</div>
+                    <div class="row g-3 mb-4 align-items-end">
+                        <div class="col-md-4"><label class="form-label">Prix unitaire (FCFA) <span class="text-danger">*</span></label><input type="number" class="form-control" id="poidsModal" placeholder="25000" step="0.01" required><div class="error-message" id="errorPoidsModal"></div><div class="success-message" id="successPoidsModal"></div></div>
+                        <div class="col-md-4"><label class="form-label">Quantite <span class="text-danger">*</span></label><input type="number" class="form-control" id="tailleModal" placeholder="2" required><div class="error-message" id="errorTailleModal"></div><div class="success-message" id="successTailleModal"></div></div>
+                        <div class="col-md-4"><div class="imc-box"><div class="imc-val" id="imcValModal">-- FCFA</div><div id="imcCatModal" style="font-size:.8rem;color:#636e72;">Entrez prix et quantite</div></div></div>
+                    </div>
+                    <div class="sec"><i class="bi bi-star-fill me-2"></i>Satisfaction & Fidelite</div>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4"><label class="form-label">Satisfaction (1-5)</label><input type="number" class="form-control" id="glycemieModal" placeholder="4" step="0.1" min="1" max="5"><div class="error-message" id="errorGlycemieModal"></div><div class="success-message" id="successGlycemieModal"></div></div>
+                        <div class="col-md-4"><label class="form-label">Achats precedents</label><input type="number" class="form-control" id="presSysModal" placeholder="3" min="0" max="999"><div class="error-message" id="errorPresSysModal"></div><div class="success-message" id="successPresSysModal"></div></div>
+                        <div class="col-md-4"><label class="form-label">Remise (%)</label><input type="number" class="form-control" id="presDiaModal" placeholder="10" step="0.01" min="0" max="100"><div class="error-message" id="errorPresDiaModal"></div><div class="success-message" id="successPresDiaModal"></div></div>
+                    </div>
+                    <div class="sec"><i class="bi bi-box-seam-fill me-2"></i>Categories</div>
+                    <div class="row g-2 mb-4">
+                        <div class="col-6 col-md-3"><label class="patho-label w-100"><input type="checkbox" value="Electronique" class="pathoCheckModal"> <i class="bi bi-phone"></i> Electronique</label></div>
+                        <div class="col-6 col-md-3"><label class="patho-label w-100"><input type="checkbox" value="Mode" class="pathoCheckModal"> <i class="bi bi-handbag"></i> Mode</label></div>
+                        <div class="col-6 col-md-3"><label class="patho-label w-100"><input type="checkbox" value="Alimentation" class="pathoCheckModal"> <i class="bi bi-cart"></i> Alimentation</label></div>
+                        <div class="col-6 col-md-3"><label class="patho-label w-100"><input type="checkbox" value="Maison" class="pathoCheckModal"> <i class="bi bi-house"></i> Maison</label></div>
+                        <div class="col-6 col-md-3"><label class="patho-label w-100"><input type="checkbox" value="Beaute" class="pathoCheckModal"> <i class="bi bi-palette"></i> Beaute</label></div>
+                        <div class="col-6 col-md-3"><label class="patho-label w-100"><input type="checkbox" value="Sport" class="pathoCheckModal"> <i class="bi bi-trophy"></i> Sport</label></div>
+                        <div class="col-6 col-md-3"><label class="patho-label w-100"><input type="checkbox" value="Livres" class="pathoCheckModal"> <i class="bi bi-book"></i> Livres</label></div>
+                        <div class="col-6 col-md-3"><label class="patho-label w-100"><input type="checkbox" value="Aucune" id="aucuneModal"> <i class="bi bi-box"></i> Autres</label></div>
+                    </div>
+                    <button type="submit" class="btn btn-submit" id="btnSubmit"><i class="bi bi-send-fill me-2"></i>Enregistrer la vente</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL CONFIRMATION SUPPRESSION -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white"><h5 class="modal-title"><i class="bi bi-exclamation-triangle me-2"></i>Confirmer</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body text-center"><p>Supprimer la vente <strong id="deleteIdDisplay"></strong> ?</p></div>
+            <div class="modal-footer justify-content-center"><button class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button><button class="btn btn-danger" id="btnConfirmDelete"><i class="bi bi-trash me-2"></i>Supprimer</button></div>
+        </div>
+    </div>
+</div>
+
+<!-- SECTION ACCUEIL -->
+<div id="section-accueil" class="section-content">
+    <section class="hero">
+        <div class="container text-center">
+            <div class="hero-badge"><i class="bi bi-shield-check me-1"></i>Donnees securisees</div>
+            <h1 class="mt-2"><i class="bi bi-shop me-2"></i>ShopData</h1>
+            <p class="col-md-7 mx-auto mb-4">Analysez les tendances d'achat au Cameroun grace a notre plateforme e-commerce.</p>
+            <div class="row justify-content-center g-3">
+                <div class="col-auto"><div class="mini-stat"><div class="v" id="heroTotal">--</div><div class="l">Ventes</div></div></div>
+                <div class="col-auto"><div class="mini-stat"><div class="v" id="heroAge">--</div><div class="l">Panier moyen</div></div></div>
+                <div class="col-auto"><div class="mini-stat"><div class="v" id="heroImc">--</div><div class="l">Satisfaction</div></div></div>
+            </div>
+        </div>
+    </section>
+    <div class="container py-4">
+        <div class="carousel-section"><h4><i class="bi bi-receipt me-2"></i>Dernieres ventes</h4><div class="carousel-container" id="carouselVentes"><button class="carousel-btn prev" onclick="moveCarousel('carouselVentes',-1)"><i class="bi bi-chevron-left"></i></button><div class="carousel-track" id="trackVentes"></div><button class="carousel-btn next" onclick="moveCarousel('carouselVentes',1)"><i class="bi bi-chevron-right"></i></button></div><div class="carousel-dots" id="dotsVentes"></div></div>
+        <div class="carousel-section"><h4><i class="bi bi-bar-chart-fill me-2"></i>Statistiques</h4><div class="carousel-container" id="carouselStats"><button class="carousel-btn prev" onclick="moveCarousel('carouselStats',-1)"><i class="bi bi-chevron-left"></i></button><div class="carousel-track" id="trackStats"></div><button class="carousel-btn next" onclick="moveCarousel('carouselStats',1)"><i class="bi bi-chevron-right"></i></button></div><div class="carousel-dots" id="dotsStats"></div></div>
+        <div class="carousel-section"><h4><i class="bi bi-tags-fill me-2"></i>Categories populaires</h4><div class="carousel-container" id="carouselCategories"><button class="carousel-btn prev" onclick="moveCarousel('carouselCategories',-1)"><i class="bi bi-chevron-left"></i></button><div class="carousel-track" id="trackCategories"></div><button class="carousel-btn next" onclick="moveCarousel('carouselCategories',1)"><i class="bi bi-chevron-right"></i></button></div><div class="carousel-dots" id="dotsCategories"></div></div>
+    </div>
+    <div class="container py-3 text-center"><button class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#collecteModal" onclick="resetForm()"><i class="bi bi-plus-circle me-2"></i>Ajouter une vente</button></div>
+</div>
+
+<!-- SECTION DASHBOARD -->
+<div id="section-dashboard" class="section-content d-none">
+    <div class="container py-4">
+        <h2 class="fw-bold mb-4" style="color:#1a73e8;"><i class="bi bi-graph-up-arrow me-2"></i>Tableau de bord e-commerce</h2>
+        <div class="row mb-4" id="summary-cards"></div>
+        <div class="card p-3 mb-4"><h5 class="fw-bold"><i class="bi bi-grid-3x3-gap-fill me-2"></i>Matrice de correlation</h5><div id="heatmapCorr" class="plot-container"></div></div>
+        <div class="card p-3 mb-4"><div class="d-flex justify-content-between"><h5 class="fw-bold"><i class="bi bi-scatter-chart me-2"></i>Dispersion</h5><div class="d-flex gap-2"><select id="xVar" class="form-select form-select-sm w-auto"></select><span class="align-self-center">vs</span><select id="yVar" class="form-select form-select-sm w-auto"></select><button class="btn btn-sm btn-outline-primary" onclick="updateScatter()">Mettre a jour</button></div></div><div id="scatterPlot" class="plot-container"></div></div>
+        <div class="card p-3 mb-4"><h5 class="fw-bold"><i class="bi bi-box me-2"></i>Boites (quartiles)</h5><div id="boxPlot" class="plot-container"></div></div>
+        <div class="card p-3"><h5 class="fw-bold mb-3"><i class="bi bi-people-fill me-2"></i>Ventes enregistrees</h5><input type="text" id="patientSearch" class="form-control mb-3" placeholder="Rechercher..." oninput="filterPatients()"><div id="patientTableContainer"></div></div>
+    </div>
+</div>
+
+<!-- SECTION STATISTIQUES -->
+<div id="section-statistiques" class="section-content d-none">
+    <div class="container py-5">
+        <h2 class="fw-bold mb-3 text-center" style="color:#1a73e8;"><i class="bi bi-calculator me-2"></i>Analyse descriptive e-commerce</h2>
+        <div class="text-center mb-4">
+            <button class="btn btn-clean" onclick="nettoyerBase()" id="btnClean"><i class="bi bi-magic me-2"></i>Nettoyer la base</button>
+            <span id="cleanResult" class="ms-3"></span>
+        </div>
+        <div class="card p-4"><div id="stats-content"><p class="text-center text-muted">Chargement...</p></div></div>
+        <div class="text-center mt-4"><a href="/api/export/csv" class="btn btn-success"><i class="bi bi-download"></i> Exporter CSV</a></div>
+    </div>
+</div>
+
+<footer>
+    <p class="mb-0"><i class="bi bi-cart me-1"></i> <span>ShopData Cam</span> - Plateforme e-commerce | Cameroun 2025</p>
+    <p style="font-size:.75rem;" class="mb-0">INF 232 EC2 - Collecte & Analyse | Flask + ML</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    let allPatients = [], dashboardLoaded = false, statistiquesLoaded = false;
+    let carouselPositions = { carouselVentes: 0, carouselStats: 0, carouselCategories: 0 };
+    let deleteId = null;
+
+    function showAccueil() {
+        document.querySelectorAll('.section-content').forEach(el => el.classList.add('d-none'));
+        document.getElementById('section-accueil').classList.remove('d-none');
+        loadHeroStats(); loadCarousels();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function showSection(sectionId) {
+        document.querySelectorAll('.section-content').forEach(el => el.classList.add('d-none'));
+        document.getElementById(sectionId).classList.remove('d-none');
+        if (sectionId === 'section-dashboard' && !dashboardLoaded) { loadDashboard(); dashboardLoaded = true; }
+        else if (sectionId === 'section-statistiques' && !statistiquesLoaded) { loadStatistiques(); statistiquesLoaded = true; }
+    }
+
+    function resetForm() {
+        document.getElementById('editIdModal').value = '';
+        document.getElementById('healthFormModal').reset();
+        document.getElementById('imcValModal').textContent = '-- FCFA';
+        document.getElementById('imcCatModal').textContent = 'Entrez prix et quantite';
+        document.getElementById('collecteModalLabel').innerHTML = '<i class="bi bi-shop me-2"></i>Formulaire de vente';
+        document.getElementById('btnSubmit').innerHTML = '<i class="bi bi-send-fill me-2"></i>Enregistrer la vente';
+        clearAllMessages(); document.getElementById('alertBoxModal').classList.add('d-none');
+    }
+
+    function editPatient(id) {
+        const p = allPatients.find(x => x.id === id); if (!p) return;
+        document.getElementById('editIdModal').value = p.id;
+        document.getElementById('nomModal').value = p.nom || '';
+        document.getElementById('ageModal').value = p.age || '';
+        document.getElementById('sexeModal').value = p.sexe || '';
+        document.getElementById('poidsModal').value = p.poids || '';
+        document.getElementById('tailleModal').value = p.taille || '';
+        document.getElementById('glycemieModal').value = p.glycemie || '';
+        document.getElementById('presSysModal').value = p.pression_sys || '';
+        document.getElementById('presDiaModal').value = p.pression_dia || '';
+        document.getElementById('communeModal').value = p.commune || '';
+        document.getElementById('paiementModal').value = p.paiement || '';
+        document.querySelectorAll('.pathoCheckModal').forEach(cb => cb.checked = false);
+        if (p.pathologies) p.pathologies.split(',').forEach(cat => {
+            document.querySelectorAll('.pathoCheckModal').forEach(cb => { if (cb.value === cat.trim()) cb.checked = true; });
+        });
+        calcImcModal();
+        document.getElementById('collecteModalLabel').innerHTML = '<i class="bi bi-pencil-square me-2"></i>Modifier vente #' + id;
+        document.getElementById('btnSubmit').innerHTML = '<i class="bi bi-check-circle me-2"></i>Mettre a jour';
+        new bootstrap.Modal(document.getElementById('collecteModal')).show();
+    }
+
+    function confirmDelete(id) {
+        deleteId = id;
+        document.getElementById('deleteIdDisplay').textContent = '#' + id;
+        new bootstrap.Modal(document.getElementById('confirmDeleteModal')).show();
+    }
+
+    document.getElementById('btnConfirmDelete').addEventListener('click', async function() {
+        if (!deleteId) return;
+        try {
+            const res = await fetch('/api/patients/' + deleteId, { method: 'DELETE' });
+            if (res.ok) {
+                bootstrap.Modal.getInstance(document.getElementById('confirmDeleteModal')).hide();
+                loadDashboard(); loadHeroStats(); loadCarousels();
+            }
+        } catch(e) { console.error(e); }
+        deleteId = null;
+    });
+
+    async function nettoyerBase() {
+        const btn = document.getElementById('btnClean'), result = document.getElementById('cleanResult');
+        btn.disabled = true; btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Nettoyage...';
+        try {
+            const res = await fetch('/api/nettoyer', { method: 'POST' });
+            const data = await res.json();
+            result.innerHTML = res.ok ? `<span class="text-success"><i class="bi bi-check-circle"></i> ${data.message}</span>` : `<span class="text-danger">${data.error}</span>`;
+            if (res.ok) { loadStatistiques(); loadHeroStats(); }
+        } catch { result.innerHTML = '<span class="text-danger">Erreur</span>'; }
+        btn.disabled = false; btn.innerHTML = '<i class="bi bi-magic me-2"></i>Nettoyer la base';
+    }
+
+    function showError(id, msg) { const el=document.getElementById(id); if(el){el.textContent=msg;el.classList.add('visible');} const s=document.getElementById(id.replace('error','success')); if(s){s.textContent='';s.classList.remove('visible');} }
+    function showSuccess(id, msg) { const el=document.getElementById(id); if(el){el.textContent=msg;el.classList.add('visible');} const e=document.getElementById(id.replace('success','error')); if(e){e.textContent='';e.classList.remove('visible');} }
+    function clearMessage(id) { const el=document.getElementById(id); if(el){el.textContent='';el.classList.remove('visible');} }
+    function clearAllMessages() {
+        ['nomModal','ageModal','sexeModal','poidsModal','tailleModal','glycemieModal','presSysModal','presDiaModal','communeModal','paiementModal'].forEach(id => {
+            clearMessage('error'+id.charAt(0).toUpperCase()+id.slice(1));
+            clearMessage('success'+id.charAt(0).toUpperCase()+id.slice(1));
+        });
+    }
+
+    function validerFormulaire() {
+        clearAllMessages(); let isValid = true;
+        const nom = document.getElementById('nomModal').value.trim();
+        if (nom && (nom.length < 2 || /\d/.test(nom) || !/^[a-zA-ZÀ-ÿ\s\-]+$/.test(nom))) { showError('errorNomModal','Invalide'); isValid=false; }
+        else if (nom) showSuccess('successNomModal','OK');
+        const age = parseFloat(document.getElementById('ageModal').value);
+        if (!document.getElementById('ageModal').value || isNaN(age) || age < 0 || age < 18 || age > 120 || !Number.isInteger(age)) { showError('errorAgeModal','18-120 entier'); isValid=false; }
+        else showSuccess('successAgeModal','OK');
+        if (!document.getElementById('sexeModal').value) { showError('errorSexeModal','Obligatoire'); isValid=false; }
+        else showSuccess('successSexeModal','OK');
+        const prix = parseFloat(document.getElementById('poidsModal').value);
+        if (!document.getElementById('poidsModal').value || isNaN(prix) || prix <= 0 || prix > 10000000) { showError('errorPoidsModal','>0, max 10M'); isValid=false; }
+        else showSuccess('successPoidsModal','OK');
+        const qte = parseFloat(document.getElementById('tailleModal').value);
+        if (!document.getElementById('tailleModal').value || isNaN(qte) || qte <= 0 || !Number.isInteger(qte) || qte > 1000) { showError('errorTailleModal','Entier >0, max 1000'); isValid=false; }
+        else showSuccess('successTailleModal','OK');
+        const sat = document.getElementById('glycemieModal').value;
+        if (sat && (isNaN(parseFloat(sat)) || parseFloat(sat) < 1 || parseFloat(sat) > 5)) { showError('errorGlycemieModal','1-5'); isValid=false; }
+        const achats = document.getElementById('presSysModal').value;
+        if (achats && (isNaN(parseFloat(achats)) || parseFloat(achats) < 0 || !Number.isInteger(parseFloat(achats)) || parseFloat(achats) > 999)) { showError('errorPresSysModal','0-999'); isValid=false; }
+        const remise = document.getElementById('presDiaModal').value;
+        if (remise && (isNaN(parseFloat(remise)) || parseFloat(remise) < 0 || parseFloat(remise) > 100)) { showError('errorPresDiaModal','0-100%'); isValid=false; }
+        const ville = document.getElementById('communeModal').value.trim();
+        if (ville && /\d/.test(ville)) { showError('errorCommuneModal','Pas de chiffres'); isValid=false; }
+        if (!document.getElementById('paiementModal').value) { showError('errorPaiementModal','Obligatoire'); isValid=false; }
+        return isValid;
+    }
+
+    function calcImcModal() {
+        const p=parseFloat(document.getElementById('poidsModal').value), t=parseInt(document.getElementById('tailleModal').value);
+        document.getElementById('imcValModal').textContent = (p&&t&&p>0&&t>0) ? (p*t).toLocaleString('fr-FR')+' FCFA' : '-- FCFA';
+    }
+    document.getElementById('poidsModal').addEventListener('input',calcImcModal);
+    document.getElementById('tailleModal').addEventListener('input',calcImcModal);
+
+    function updatePathoModal() {
+        let p=[...document.querySelectorAll('#healthFormModal .pathoCheckModal:checked')].map(c=>c.value);
+        const a=document.getElementById('aucuneModal');
+        if(a.checked){document.querySelectorAll('#healthFormModal .pathoCheckModal').forEach(c=>{if(c!==a)c.checked=false;});p=['Autres'];}
+        else p=p.filter(v=>v!=='Autres');
+        return p;
+    }
+    document.getElementById('aucuneModal').addEventListener('change',function(e){if(e.target.checked)document.querySelectorAll('#healthFormModal .pathoCheckModal').forEach(c=>{if(c.id!=='aucuneModal')c.checked=false;});});
+    document.querySelectorAll('#healthFormModal .pathoCheckModal').forEach(cb=>{cb.addEventListener('change',()=>{if(cb.checked&&cb.value!=='Autres')document.getElementById('aucuneModal').checked=false;});});
+
+    document.getElementById('healthFormModal').addEventListener('submit',async(e)=>{
+        e.preventDefault();
+        if(!validerFormulaire()){document.getElementById('alertBoxModal').classList.remove('d-none');document.getElementById('alertBoxModal').className='alert alert-danger mb-4';document.getElementById('alertBoxModal').innerHTML='<i class="bi bi-exclamation-triangle me-2"></i>Corrigez les erreurs.';return;}
+        const editId=document.getElementById('editIdModal').value, isEdit=editId!=='';
+        const btn=document.getElementById('btnSubmit');btn.disabled=true;btn.innerHTML='<span class="spinner-border spinner-border-sm me-2"></span>'+(isEdit?'Mise a jour...':'Enregistrement...');
+        const data={
+            nom:document.getElementById('nomModal').value.trim(),age:document.getElementById('ageModal').value,
+            sexe:document.getElementById('sexeModal').value,poids:document.getElementById('poidsModal').value,
+            taille:document.getElementById('tailleModal').value,glycemie:document.getElementById('glycemieModal').value||null,
+            pression_sys:document.getElementById('presSysModal').value||null,pression_dia:document.getElementById('presDiaModal').value||null,
+            pathologies:updatePathoModal(),commune:document.getElementById('communeModal').value.trim(),
+            paiement:document.getElementById('paiementModal').value
+        };
+        const url=isEdit?'/api/patients/'+editId:'/api/patients',method=isEdit?'PUT':'POST';
+        try{
+            const res=await fetch(url,{method,headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+            const json=await res.json();const ab=document.getElementById('alertBoxModal');ab.classList.remove('d-none');
+            if(res.ok){
+                ab.className='alert-ok mb-4 p-3';ab.innerHTML=`<i class="bi bi-check-circle-fill me-2"></i><strong>${isEdit?'Modifie':'Enregistre'} !</strong> Total: <strong>${json.imc.toLocaleString('fr-FR')} FCFA</strong>.`;
+                document.getElementById('editIdModal').value='';e.target.reset();
+                document.getElementById('imcValModal').textContent='-- FCFA';document.getElementById('imcCatModal').textContent='Entrez prix et quantite';
+                document.getElementById('collecteModalLabel').innerHTML='<i class="bi bi-shop me-2"></i>Formulaire de vente';
+                document.getElementById('btnSubmit').innerHTML='<i class="bi bi-send-fill me-2"></i>Enregistrer la vente';
+                clearAllMessages();loadHeroStats();loadCarousels();
+                if(dashboardLoaded)loadDashboard();if(statistiquesLoaded)loadStatistiques();
+                setTimeout(()=>{bootstrap.Modal.getInstance(document.getElementById('collecteModal')).hide();ab.classList.add('d-none');},1500);
+            }else{ab.className='alert alert-danger mb-4';ab.innerHTML=`<i class="bi bi-exclamation-triangle me-2"></i>${json.error}`;}
+        }catch{const ab=document.getElementById('alertBoxModal');ab.classList.remove('d-none');ab.className='alert alert-danger mb-4';ab.innerHTML='Erreur connexion.';}
+        btn.disabled=false;btn.innerHTML='<i class="bi bi-send-fill me-2"></i>Enregistrer la vente';
+    });
+    document.getElementById('collecteModal').addEventListener('show.bs.modal',()=>{clearAllMessages();document.getElementById('alertBoxModal').classList.add('d-none');});
+
+    function moveCarousel(id,dir){
+        const track=document.getElementById('track'+id.replace('carousel','')),cards=track.children;
+        if(!cards.length)return;
+        const w=cards[0].offsetWidth+20,max=Math.max(0,cards.length-Math.floor(track.parentElement.offsetWidth/w));
+        carouselPositions[id]=Math.max(0,Math.min(carouselPositions[id]+dir,max));
+        track.style.transform=`translateX(-${carouselPositions[id]*w}px)`;updateDots(id);
+    }
+    function updateDots(id){
+        const dots=document.getElementById('dots'+id.replace('carousel','')),track=document.getElementById('track'+id.replace('carousel',''));
+        if(!dots||!track.children.length)return;
+        const w=track.children[0].offsetWidth+20,max=Math.max(0,track.children.length-Math.floor(track.parentElement.offsetWidth/w));
+        dots.innerHTML=Array.from({length:max+1},(_,i)=>`<span class="dot${i===carouselPositions[id]?' active':''}" onclick="goToSlide('${id}',${i})"></span>`).join('');
+    }
+    function goToSlide(id,i){carouselPositions[id]=i;const t=document.getElementById('track'+id.replace('carousel',''));if(t.children.length){t.style.transform=`translateX(-${i*(t.children[0].offsetWidth+20)}px)`;updateDots(id);}}
+
+    async function loadCarousels(){
+        try{
+            const[ventes,stats,cats]=await Promise.all([fetch('/api/carrousel/ventes').then(r=>r.json()),fetch('/api/carrousel/stats').then(r=>r.json()),fetch('/api/carrousel/categories').then(r=>r.json())]);
+            document.getElementById('trackVentes').innerHTML=ventes.map(v=>`<div class="carousel-card"><div class="car-icon"><i class="bi bi-person-circle"></i></div><div class="car-value">${v.total?Number(v.total).toLocaleString('fr-FR')+' FCFA':'--'}</div><div class="car-label">${v.client}</div><div class="car-sub"><i class="bi bi-geo-alt"></i> ${v.ville} | ${v.date}</div></div>`).join('');
+            document.getElementById('trackStats').innerHTML=stats.map(s=>`<div class="carousel-card"><div class="car-icon"><i class="bi ${s.icon}"></i></div><div class="car-value">${s.valeur}</div><div class="car-label">${s.label}</div></div>`).join('');
+            document.getElementById('trackCategories').innerHTML=cats.map(c=>`<div class="carousel-card cat-card"><div class="car-icon"><i class="bi ${c.icon}"></i></div><div class="car-value">${c.pourcentage}%</div><div class="car-label">${c.nom}</div><div class="car-sub">${c.count} vente(s)</div></div>`).join('');
+            ['carouselVentes','carouselStats','carouselCategories'].forEach(id=>updateDots(id));
+        }catch(e){}
+    }
+
+    async function loadHeroStats(){
+        try{const r=await fetch('/api/stats/descriptives');const s=await r.json();if(s.total>0){document.getElementById('heroTotal').textContent=s.total;document.getElementById('heroAge').textContent=s.imc.moyenne.toLocaleString('fr-FR')+' FCFA';document.getElementById('heroImc').textContent=(s.glycemie?.moyenne||'--')+'/5';}}catch(e){}
+    }
+
+    const numericVars=['age','poids','taille','imc','glycemie','pression_sys','pression_dia'];
+    const varLabels={age:'Age',poids:'Prix unitaire',taille:'Quantite',imc:'Total commande',glycemie:'Satisfaction',pression_sys:'Achats',pression_dia:'Remise %'};
+
+    async function loadDashboard(){try{const r=await fetch('/api/patients');allPatients=await r.json();renderSummary();populateSelects();loadCorrelationMatrix();loadBoxPlots();updateScatter();renderPatientList();}catch(e){}}
+    function renderSummary(){const t=allPatients.length;const tot=allPatients.map(p=>p.imc).filter(i=>i);const at=tot.length?Math.round(tot.reduce((a,b)=>a+b)/tot.length).toLocaleString('fr-FR'):'--';const sat=allPatients.map(p=>p.glycemie).filter(i=>i);const as=sat.length?(sat.reduce((a,b)=>a+b)/sat.length).toFixed(1):'--';document.getElementById('summary-cards').innerHTML=`<div class="col-md-3"><div class="card p-3 text-center"><h6>Total ventes</h6><h2>${t}</h2></div></div><div class="col-md-3"><div class="card p-3 text-center"><h6>Panier moyen</h6><h2>${at} FCFA</h2></div></div><div class="col-md-3"><div class="card p-3 text-center"><h6>Satisfaction</h6><h2>${as}/5</h2></div></div><div class="col-md-3"><div class="card p-3 text-center"><h6>Donnees</h6><h2>${t?'OK':'N/A'}</h2></div></div>`;}
+    function populateSelects(){['xVar','yVar'].forEach(id=>{document.getElementById(id).innerHTML='';numericVars.forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=varLabels[v];document.getElementById(id).appendChild(o.cloneNode(true));});});document.getElementById('xVar').value='poids';document.getElementById('yVar').value='imc';}
+    async function loadCorrelationMatrix(){try{const r=await fetch('/api/correlation');const d=await r.json();if(d.error){document.getElementById('heatmapCorr').innerHTML=`<p class="text-muted">${d.error}</p>`;return;}Plotly.newPlot('heatmapCorr',[{z:d.matrix,x:d.variables.map(v=>varLabels[v]),y:d.variables.map(v=>varLabels[v]),type:'heatmap',colorscale:'RdBu',zmin:-1,zmax:1}],{title:'Matrice de correlation',height:500,margin:{l:120,r:20,t:40,b:100}},{responsive:true});}catch(e){}}
+    function loadBoxPlots(){const tr=[];['imc','taille','glycemie','age'].forEach(v=>{const va=allPatients.map(p=>p[v]).filter(x=>x!=null);if(va.length)tr.push({y:va,name:varLabels[v],type:'box',boxmean:'sd',marker:{color:'#1a73e8'}});});Plotly.newPlot('boxPlot',tr,{title:'Distribution',yaxis:{title:'Valeurs'},height:450,showlegend:false},{responsive:true});}
+    window.updateScatter=function(){const xV=document.getElementById('xVar').value,yV=document.getElementById('yVar').value;const xA=[],yA=[];allPatients.forEach(p=>{const x=p[xV],y=p[yV];if(x!=null&&y!=null&&!isNaN(x)&&!isNaN(y)){xA.push(x);yA.push(y);}});Plotly.newPlot('scatterPlot',[{x:xA,y:yA,mode:'markers',type:'scatter',marker:{size:8,color:'#4285f4',opacity:.7}}],{xaxis:{title:varLabels[xV]},yaxis:{title:varLabels[yV]},height:400},{responsive:true});};
+
+    function renderPatientList(){
+        const c=document.getElementById('patientTableContainer');
+        if(!allPatients.length){c.innerHTML='<p class="text-muted">Aucune vente.</p>';return;}
+        let h=`<div class="table-responsive"><table class="table table-hover table-patients mb-0" id="patientsTable"><thead><tr><th>ID</th><th>Client</th><th>Age</th><th>Sexe</th><th>Total</th><th>Sat.</th><th>Categories</th><th>Ville</th><th>Date</th><th>Actions</th></tr></thead><tbody>`;
+        allPatients.forEach(p=>{h+=`<tr><td>${p.id}</td><td>${p.nom||'Anonyme'}</td><td>${p.age||'--'}</td><td>${p.sexe||'--'}</td><td>${p.imc?p.imc.toLocaleString('fr-FR')+' FCFA':'--'}</td><td>${p.glycemie?p.glycemie+'/5':'--'}</td><td>${p.pathologies?p.pathologies.split(',').map(x=>`<span class="badge badge-patho">${x.trim()}</span>`).join(' '):'--'}</td><td>${p.commune||'--'}</td><td>${p.date_enregistrement?new Date(p.date_enregistrement).toLocaleDateString('fr-FR'):'--'}</td><td><button class="btn-action btn-edit me-1" onclick="editPatient(${p.id})"><i class="bi bi-pencil"></i></button><button class="btn-action btn-delete" onclick="confirmDelete(${p.id})"><i class="bi bi-trash"></i></button></td></tr>`;});
+        h+=`</tbody></table></div>`;c.innerHTML=h;
+    }
+    window.filterPatients=function(){const f=document.getElementById('patientSearch').value.toUpperCase();document.querySelectorAll('#patientsTable tbody tr').forEach(r=>{r.style.display=r.textContent.toUpperCase().includes(f)?'':'none';});};
+
+    // ==================== STATISTIQUES (PRESENTATION COMME CAPTURE) ====================
+    async function loadStatistiques(){
+        const container=document.getElementById('stats-content');
+        try{
+            const r=await fetch('/api/stats/descriptives');const s=await r.json();
+            const rp=await fetch('/api/patients');const pts=await rp.json();
+            if(!s.total){container.innerHTML='<p class="text-muted">Aucune donnee.</p>';return;}
+
+            // Tableau principal
+            let html='<h5 style="color:#1a73e8;font-weight:700;">Variables</h5>';
+            html+='<div class="table-responsive"><table class="stats-table"><thead><tr><th>Variable</th><th>n</th><th>Moyenne</th><th>Ecart-type</th><th>Min</th><th>Q1</th><th>Mediane</th><th>Q3</th><th>Max</th></tr></thead><tbody>';
+            const lb={age:'Age',poids:'Prix unitaire (FCFA)',taille:'Quantite',imc:'Total commande (FCFA)',glycemie:'Satisfaction (/5)'};
+            for(let v of['age','poids','taille','imc','glycemie']){
+                if(s[v]){let st=s[v];html+=`<tr><td>${lb[v]}</td><td>${st.count}</td><td>${st.moyenne.toLocaleString('fr-FR')}</td><td>${st.ecart_type.toLocaleString('fr-FR')}</td><td>${st.minimum.toLocaleString('fr-FR')}</td><td>${st.Q1.toLocaleString('fr-FR')}</td><td>${st.Q2.toLocaleString('fr-FR')}</td><td>${st.Q3.toLocaleString('fr-FR')}</td><td>${st.maximum.toLocaleString('fr-FR')}</td></tr>`;}
+            }
+            if(s.pression){
+                html+=`<tr><td>Achats precedents</td><td>${s.pression.systolique.count}</td><td>${s.pression.systolique.moyenne.toLocaleString('fr-FR')}</td><td>${s.pression.systolique.ecart_type.toLocaleString('fr-FR')}</td><td colspan="5"></td></tr>`;
+                html+=`<tr><td>Remise (%)</td><td>${s.pression.diastolique.count}</td><td>${s.pression.diastolique.moyenne.toLocaleString('fr-FR')}</td><td>${s.pression.diastolique.ecart_type.toLocaleString('fr-FR')}</td><td colspan="5"></td></tr>`;
+            }
+            html+='</tbody></table></div>';
+
+            // Sous-groupes
+            let male=pts.filter(p=>p.sexe==='Homme'),female=pts.filter(p=>p.sexe==='Femme');
+            let jeunes=pts.filter(p=>p.age&&p.age<30),adultes=pts.filter(p=>p.age&&p.age>=30&&p.age<=50),seniors=pts.filter(p=>p.age&&p.age>50);
+            const mv=(arr,key)=>arr.length?Math.round(arr.reduce((a,b)=>a+b[key],0)/arr.length).toLocaleString('fr-FR'):'---';
+            
+            html+='<div class="subgroup-title">Analyses par sous-groupes</div>';
+            html+=`<div class="row"><div class="col-md-6"><div class="subgroup-card"><strong>Hommes (n=${male.length})</strong><br>Panier moyen: ${mv(male,'imc')} FCFA</div></div><div class="col-md-6"><div class="subgroup-card"><strong>Femmes (n=${female.length})</strong><br>Panier moyen: ${mv(female,'imc')} FCFA</div></div></div>`;
+            html+=`<div class="row"><div class="col-md-4"><div class="subgroup-card"><strong>Jeunes (<30 ans):</strong> n=${jeunes.length}<br>Total moyen: ${mv(jeunes,'imc')} FCFA</div></div><div class="col-md-4"><div class="subgroup-card"><strong>Adultes (30-50):</strong> n=${adultes.length}<br>Total moyen: ${mv(adultes,'imc')} FCFA</div></div><div class="col-md-4"><div class="subgroup-card"><strong>Seniors (>50):</strong> n=${seniors.length}<br>Total moyen: ${mv(seniors,'imc')} FCFA</div></div></div>`;
+
+            // Mesures de forme
+            html+='<div class="subgroup-title">Mesures de forme et position</div>';
+            html+='<div class="table-responsive"><table class="stats-table"><thead><tr><th>Variable</th><th>Asymetrie</th><th>Kurtosis</th><th>IC 95%</th></tr></thead><tbody>';
+            for(let v of['age','imc','glycemie']){
+                let vals=pts.map(p=>p[v]).filter(x=>x!=null);
+                if(vals.length>1){
+                    let m=vals.reduce((a,b)=>a+b)/vals.length,sd=Math.sqrt(vals.map(x=>Math.pow(x-m,2)).reduce((a,b)=>a+b)/vals.length),skew=0,kurt=0;
+                    if(sd!==0){skew=vals.map(x=>Math.pow((x-m)/sd,3)).reduce((a,b)=>a+b)/vals.length;kurt=vals.map(x=>Math.pow((x-m)/sd,4)).reduce((a,b)=>a+b)/vals.length-3;}
+                    let icl=m-1.96*sd/Math.sqrt(vals.length),ich=m+1.96*sd/Math.sqrt(vals.length);
+                    html+=`<tr><td>${lb[v]}</td><td>${skew.toFixed(3)}</td><td>${kurt.toFixed(3)}</td><td>[${icl.toFixed(2)} ; ${ich.toFixed(2)}]</td></tr>`;
+                }
+            }
+            html+='</tbody></table></div>';
+
+            // Rapport automatique
+            let insights=[];
+            let imcV=pts.map(p=>p.imc).filter(x=>x);
+            if(imcV.length){let m=imcV.reduce((a,b)=>a+b)/imcV.length;if(m>50000)insights.push('Panier moyen eleve (>50 000 FCFA). Clients a fort potentiel.');else if(m<10000)insights.push('Panier moyen faible (<10 000 FCFA). Opportunite d\'upsell.');}
+            let glyV=pts.map(p=>p.glycemie).filter(x=>x);
+            if(glyV.length){let m=glyV.reduce((a,b)=>a+b)/glyV.length;if(m<3)insights.push('Satisfaction client faible. Ameliorer le service.');else if(m>=4.5)insights.push('Excellente satisfaction client !');}
+            if(!insights.length)insights.push('Aucune tendance particuliere detectee.');
+            
+            html+='<div class="rapport-title">Rapport e-commerce automatique</div>';
+            html+=`<div class="rapport-box">${insights.map(i=>`<div><i class="bi bi-lightbulb-fill"></i> ${i}</div>`).join('')}</div>`;
+
+            container.innerHTML=html;
+        }catch(e){container.innerHTML='<p class="text-danger">Erreur chargement stats.</p>';}
+    }
+
+    window.addEventListener('load',()=>{
+        loadHeroStats();loadCarousels();
+        document.querySelectorAll('.section-content').forEach(el=>el.classList.add('d-none'));
+        document.getElementById('section-accueil').classList.remove('d-none');
+    });
+</script>
+</body>
+</html>
