@@ -19,11 +19,7 @@
         .nav-pill { background: rgba(255,255,255,.2); border-radius: 20px; padding: 6px 16px !important; cursor: pointer; }
         .nav-pill.active { background: rgba(255,255,255,.35); }
         .section-content.d-none { display: none !important; }
-        .hero {
-            background-image: url('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1600&q=80');
-            background-size: cover; background-position: center; color: white;
-            padding: 70px 0 100px; position: relative; overflow: hidden;
-        }
+        .hero { background-image: url('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1600&q=80'); background-size: cover; background-position: center; color: white; padding: 70px 0 100px; position: relative; overflow: hidden; }
         .hero::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 30, 80, 0.8); z-index: 0; }
         .hero .container { position: relative; z-index: 1; }
         .hero-badge { background: rgba(255,255,255,.2); border: 1px solid rgba(255,255,255,.35); border-radius: 30px; padding: 7px 18px; font-size: .85rem; display: inline-block; margin-bottom: 14px; }
@@ -46,10 +42,7 @@
         .btn-submit { background: linear-gradient(135deg, #1a73e8, #4285f4); border: none; color: white; border-radius: 14px; padding: 15px 40px; font-weight: 600; font-size: 1rem; width: 100%; transition: .2s; }
         .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(26,115,232,.45); color: white; }
         .alert-ok { background: linear-gradient(135deg, #1a73e8, #4285f4); color: white; border: none; border-radius: 14px; padding: 16px 20px; }
-        .info-section {
-            background-image: url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1600&q=80');
-            background-size: cover; background-position: center; color: white; padding: 70px 0; position: relative;
-        }
+        .info-section { background-image: url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1600&q=80'); background-size: cover; background-position: center; color: white; padding: 70px 0; position: relative; }
         .info-section::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(10, 20, 50, 0.85); z-index: 0; }
         .info-section .container { position: relative; z-index: 1; }
         .info-card { background: rgba(255,255,255,.1); border-radius: 16px; padding: 24px; text-align: center; border: 1px solid rgba(255,255,255,.2); transition: .3s; backdrop-filter: blur(4px); }
@@ -77,26 +70,18 @@
         .success-message.visible { display: block; }
         .btn-clean { background: #ff6b6b; color: white; border: none; border-radius: 12px; padding: 10px 20px; font-weight: 600; }
         .btn-clean:hover { background: #ee5a24; color: white; }
-
-        /* Style tableau statistiques (comme capture) */
         .stats-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.9rem; }
         .stats-table th { background: #1a73e8; color: white; padding: 10px 8px; text-align: center; font-weight: 600; }
         .stats-table td { padding: 8px; text-align: center; border: 1px solid #e0e0e0; }
         .stats-table tr:nth-child(even) { background: #f8fbff; }
         .stats-table tr:hover { background: #e8f0fe; }
         .stats-table td:first-child { text-align: left; font-weight: 500; }
-
-        /* Style sous-groupes */
         .subgroup-card { background: white; border: 1px solid #e0e0e0; border-radius: 10px; padding: 12px 16px; margin-bottom: 10px; }
         .subgroup-card strong { color: #1a73e8; }
         .subgroup-title { color: #1a73e8; font-weight: 700; font-size: 1.1rem; margin: 25px 0 15px 0; border-bottom: 2px solid #4285f4; padding-bottom: 8px; }
-
-        /* Style rapport auto */
         .rapport-box { background: #fff3cd; border: 1px solid #ffc107; border-radius: 10px; padding: 15px 20px; margin-top: 20px; }
         .rapport-box i { color: #f39c12; margin-right: 8px; }
         .rapport-title { color: #1a73e8; font-weight: 700; font-size: 1.1rem; margin: 25px 0 15px 0; border-bottom: 2px solid #4285f4; padding-bottom: 8px; }
-
-        /* Carrousels */
         .carousel-section { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 8px 24px rgba(0,0,0,0.05); margin-bottom: 30px; }
         .carousel-section h4 { color: #1a73e8; font-weight: 700; margin-bottom: 20px; }
         .carousel-container { position: relative; overflow: hidden; }
@@ -114,7 +99,6 @@
         .carousel-dots .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #d2e3fc; margin: 0 5px; cursor: pointer; }
         .carousel-dots .dot.active { background: #1a73e8; width: 25px; border-radius: 10px; }
         .carousel-card.cat-card .car-value, .carousel-card.cat-card .car-icon { color: #e67e22; }
-
         .btn-action { padding: 4px 10px; font-size: 0.8rem; border-radius: 8px; }
         .btn-edit { background: #4285f4; color: white; border: none; }
         .btn-edit:hover { background: #1a73e8; }
@@ -201,6 +185,21 @@
     </div>
 </div>
 
+<!-- MODAL CONNEXION ADMIN -->
+<div class="modal fade" id="adminLoginModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-header"><h5 class="modal-title"><i class="bi bi-shield-lock-fill me-2"></i>Acces Admin</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+                <p class="text-muted small">Entrez le mot de passe administrateur.</p>
+                <input type="password" class="form-control" id="adminPasswordInput" placeholder="Mot de passe">
+                <div class="text-danger small mt-2 d-none" id="adminLoginError">Mot de passe incorrect !</div>
+            </div>
+            <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button><button type="button" class="btn btn-primary" id="btnAdminLogin"><i class="bi bi-check-lg me-1"></i>Valider</button></div>
+        </div>
+    </div>
+</div>
+
 <!-- SECTION ACCUEIL -->
 <div id="section-accueil" class="section-content">
     <section class="hero">
@@ -239,10 +238,7 @@
 <div id="section-statistiques" class="section-content d-none">
     <div class="container py-5">
         <h2 class="fw-bold mb-3 text-center" style="color:#1a73e8;"><i class="bi bi-calculator me-2"></i>Analyse descriptive e-commerce</h2>
-        <div class="text-center mb-4">
-            <button class="btn btn-clean" onclick="nettoyerBase()" id="btnClean"><i class="bi bi-magic me-2"></i>Nettoyer la base</button>
-            <span id="cleanResult" class="ms-3"></span>
-        </div>
+        <div class="text-center mb-4"><button class="btn btn-clean" onclick="nettoyerBase()" id="btnClean"><i class="bi bi-magic me-2"></i>Nettoyer la base</button><span id="cleanResult" class="ms-3"></span></div>
         <div class="card p-4"><div id="stats-content"><p class="text-center text-muted">Chargement...</p></div></div>
         <div class="text-center mt-4"><a href="/api/export/csv" class="btn btn-success"><i class="bi bi-download"></i> Exporter CSV</a></div>
     </div>
@@ -255,9 +251,13 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+    // ==================== GLOBALES ====================
     let allPatients = [], dashboardLoaded = false, statistiquesLoaded = false;
     let carouselPositions = { carouselVentes: 0, carouselStats: 0, carouselCategories: 0 };
     let deleteId = null;
+    let adminToken = null;
+    let pendingAction = null;
+    const ADMIN_PASSWORD = "alina329";
 
     function showAccueil() {
         document.querySelectorAll('.section-content').forEach(el => el.classList.add('d-none'));
@@ -283,39 +283,71 @@
         clearAllMessages(); document.getElementById('alertBoxModal').classList.add('d-none');
     }
 
-    function editPatient(id) {
-        const p = allPatients.find(x => x.id === id); if (!p) return;
-        document.getElementById('editIdModal').value = p.id;
-        document.getElementById('nomModal').value = p.nom || '';
-        document.getElementById('ageModal').value = p.age || '';
-        document.getElementById('sexeModal').value = p.sexe || '';
-        document.getElementById('poidsModal').value = p.poids || '';
-        document.getElementById('tailleModal').value = p.taille || '';
-        document.getElementById('glycemieModal').value = p.glycemie || '';
-        document.getElementById('presSysModal').value = p.pression_sys || '';
-        document.getElementById('presDiaModal').value = p.pression_dia || '';
-        document.getElementById('communeModal').value = p.commune || '';
-        document.getElementById('paiementModal').value = p.paiement || '';
-        document.querySelectorAll('.pathoCheckModal').forEach(cb => cb.checked = false);
-        if (p.pathologies) p.pathologies.split(',').forEach(cat => {
-            document.querySelectorAll('.pathoCheckModal').forEach(cb => { if (cb.value === cat.trim()) cb.checked = true; });
-        });
-        calcImcModal();
-        document.getElementById('collecteModalLabel').innerHTML = '<i class="bi bi-pencil-square me-2"></i>Modifier vente #' + id;
-        document.getElementById('btnSubmit').innerHTML = '<i class="bi bi-check-circle me-2"></i>Mettre a jour';
-        new bootstrap.Modal(document.getElementById('collecteModal')).show();
+    // ==================== CONNEXION ADMIN ====================
+    function demanderConnexionAdmin(action) {
+        pendingAction = action;
+        document.getElementById('adminPasswordInput').value = '';
+        document.getElementById('adminLoginError').classList.add('d-none');
+        new bootstrap.Modal(document.getElementById('adminLoginModal')).show();
     }
 
+    document.getElementById('btnAdminLogin').addEventListener('click', function() {
+        const password = document.getElementById('adminPasswordInput').value;
+        if (password === ADMIN_PASSWORD) {
+            adminToken = 'Bearer ' + ADMIN_PASSWORD;
+            bootstrap.Modal.getInstance(document.getElementById('adminLoginModal')).hide();
+            if (pendingAction) { pendingAction(); pendingAction = null; }
+        } else {
+            document.getElementById('adminLoginError').classList.remove('d-none');
+        }
+    });
+
+    document.getElementById('adminPasswordInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') document.getElementById('btnAdminLogin').click();
+    });
+
+    // ==================== EDITION (avec connexion admin) ====================
+    function editPatient(id) {
+        demanderConnexionAdmin(function() {
+            const p = allPatients.find(x => x.id === id); if (!p) return;
+            document.getElementById('editIdModal').value = p.id;
+            document.getElementById('nomModal').value = p.nom || '';
+            document.getElementById('ageModal').value = p.age || '';
+            document.getElementById('sexeModal').value = p.sexe || '';
+            document.getElementById('poidsModal').value = p.poids || '';
+            document.getElementById('tailleModal').value = p.taille || '';
+            document.getElementById('glycemieModal').value = p.glycemie || '';
+            document.getElementById('presSysModal').value = p.pression_sys || '';
+            document.getElementById('presDiaModal').value = p.pression_dia || '';
+            document.getElementById('communeModal').value = p.commune || '';
+            document.getElementById('paiementModal').value = p.paiement || '';
+            document.querySelectorAll('.pathoCheckModal').forEach(cb => cb.checked = false);
+            if (p.pathologies) p.pathologies.split(',').forEach(cat => {
+                document.querySelectorAll('.pathoCheckModal').forEach(cb => { if (cb.value === cat.trim()) cb.checked = true; });
+            });
+            calcImcModal();
+            document.getElementById('collecteModalLabel').innerHTML = '<i class="bi bi-pencil-square me-2"></i>Modifier vente #' + id;
+            document.getElementById('btnSubmit').innerHTML = '<i class="bi bi-check-circle me-2"></i>Mettre a jour';
+            new bootstrap.Modal(document.getElementById('collecteModal')).show();
+        });
+    }
+
+    // ==================== SUPPRESSION (avec connexion admin) ====================
     function confirmDelete(id) {
-        deleteId = id;
-        document.getElementById('deleteIdDisplay').textContent = '#' + id;
-        new bootstrap.Modal(document.getElementById('confirmDeleteModal')).show();
+        demanderConnexionAdmin(function() {
+            deleteId = id;
+            document.getElementById('deleteIdDisplay').textContent = '#' + id;
+            new bootstrap.Modal(document.getElementById('confirmDeleteModal')).show();
+        });
     }
 
     document.getElementById('btnConfirmDelete').addEventListener('click', async function() {
         if (!deleteId) return;
         try {
-            const res = await fetch('/api/patients/' + deleteId, { method: 'DELETE' });
+            const res = await fetch('/api/patients/' + deleteId, { 
+                method: 'DELETE',
+                headers: { 'Authorization': adminToken }
+            });
             if (res.ok) {
                 bootstrap.Modal.getInstance(document.getElementById('confirmDeleteModal')).hide();
                 loadDashboard(); loadHeroStats(); loadCarousels();
@@ -324,18 +356,25 @@
         deleteId = null;
     });
 
+    // ==================== NETTOYAGE (avec connexion admin) ====================
     async function nettoyerBase() {
-        const btn = document.getElementById('btnClean'), result = document.getElementById('cleanResult');
-        btn.disabled = true; btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Nettoyage...';
-        try {
-            const res = await fetch('/api/nettoyer', { method: 'POST' });
-            const data = await res.json();
-            result.innerHTML = res.ok ? `<span class="text-success"><i class="bi bi-check-circle"></i> ${data.message}</span>` : `<span class="text-danger">${data.error}</span>`;
-            if (res.ok) { loadStatistiques(); loadHeroStats(); }
-        } catch { result.innerHTML = '<span class="text-danger">Erreur</span>'; }
-        btn.disabled = false; btn.innerHTML = '<i class="bi bi-magic me-2"></i>Nettoyer la base';
+        demanderConnexionAdmin(async function() {
+            const btn = document.getElementById('btnClean'), result = document.getElementById('cleanResult');
+            btn.disabled = true; btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Nettoyage...';
+            try {
+                const res = await fetch('/api/nettoyer', { 
+                    method: 'POST',
+                    headers: { 'Authorization': adminToken }
+                });
+                const data = await res.json();
+                result.innerHTML = res.ok ? `<span class="text-success"><i class="bi bi-check-circle"></i> ${data.message}</span>` : `<span class="text-danger">${data.error}</span>`;
+                if (res.ok) { loadStatistiques(); loadHeroStats(); }
+            } catch { result.innerHTML = '<span class="text-danger">Erreur</span>'; }
+            btn.disabled = false; btn.innerHTML = '<i class="bi bi-magic me-2"></i>Nettoyer la base';
+        });
     }
 
+    // ==================== VALIDATION ====================
     function showError(id, msg) { const el=document.getElementById(id); if(el){el.textContent=msg;el.classList.add('visible');} const s=document.getElementById(id.replace('error','success')); if(s){s.textContent='';s.classList.remove('visible');} }
     function showSuccess(id, msg) { const el=document.getElementById(id); if(el){el.textContent=msg;el.classList.add('visible');} const e=document.getElementById(id.replace('success','error')); if(e){e.textContent='';e.classList.remove('visible');} }
     function clearMessage(id) { const el=document.getElementById(id); if(el){el.textContent='';el.classList.remove('visible');} }
@@ -391,6 +430,7 @@
     document.getElementById('aucuneModal').addEventListener('change',function(e){if(e.target.checked)document.querySelectorAll('#healthFormModal .pathoCheckModal').forEach(c=>{if(c.id!=='aucuneModal')c.checked=false;});});
     document.querySelectorAll('#healthFormModal .pathoCheckModal').forEach(cb=>{cb.addEventListener('change',()=>{if(cb.checked&&cb.value!=='Autres')document.getElementById('aucuneModal').checked=false;});});
 
+    // ==================== SOUMISSION FORMULAIRE ====================
     document.getElementById('healthFormModal').addEventListener('submit',async(e)=>{
         e.preventDefault();
         if(!validerFormulaire()){document.getElementById('alertBoxModal').classList.remove('d-none');document.getElementById('alertBoxModal').className='alert alert-danger mb-4';document.getElementById('alertBoxModal').innerHTML='<i class="bi bi-exclamation-triangle me-2"></i>Corrigez les erreurs.';return;}
@@ -405,8 +445,10 @@
             paiement:document.getElementById('paiementModal').value
         };
         const url=isEdit?'/api/patients/'+editId:'/api/patients',method=isEdit?'PUT':'POST';
+        const headers = { 'Content-Type': 'application/json' };
+        if (isEdit) headers['Authorization'] = adminToken;
         try{
-            const res=await fetch(url,{method,headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+            const res=await fetch(url,{method,headers,body:JSON.stringify(data)});
             const json=await res.json();const ab=document.getElementById('alertBoxModal');ab.classList.remove('d-none');
             if(res.ok){
                 ab.className='alert-ok mb-4 p-3';ab.innerHTML=`<i class="bi bi-check-circle-fill me-2"></i><strong>${isEdit?'Modifie':'Enregistre'} !</strong> Total: <strong>${json.imc.toLocaleString('fr-FR')} FCFA</strong>.`;
@@ -423,6 +465,7 @@
     });
     document.getElementById('collecteModal').addEventListener('show.bs.modal',()=>{clearAllMessages();document.getElementById('alertBoxModal').classList.add('d-none');});
 
+    // ==================== CARROUSELS ====================
     function moveCarousel(id,dir){
         const track=document.getElementById('track'+id.replace('carousel','')),cards=track.children;
         if(!cards.length)return;
@@ -471,61 +514,34 @@
     }
     window.filterPatients=function(){const f=document.getElementById('patientSearch').value.toUpperCase();document.querySelectorAll('#patientsTable tbody tr').forEach(r=>{r.style.display=r.textContent.toUpperCase().includes(f)?'':'none';});};
 
-    // ==================== STATISTIQUES (PRESENTATION COMME CAPTURE) ====================
     async function loadStatistiques(){
         const container=document.getElementById('stats-content');
         try{
             const r=await fetch('/api/stats/descriptives');const s=await r.json();
             const rp=await fetch('/api/patients');const pts=await rp.json();
             if(!s.total){container.innerHTML='<p class="text-muted">Aucune donnee.</p>';return;}
-
-            // Tableau principal
             let html='<h5 style="color:#1a73e8;font-weight:700;">Variables</h5>';
             html+='<div class="table-responsive"><table class="stats-table"><thead><tr><th>Variable</th><th>n</th><th>Moyenne</th><th>Ecart-type</th><th>Min</th><th>Q1</th><th>Mediane</th><th>Q3</th><th>Max</th></tr></thead><tbody>';
             const lb={age:'Age',poids:'Prix unitaire (FCFA)',taille:'Quantite',imc:'Total commande (FCFA)',glycemie:'Satisfaction (/5)'};
-            for(let v of['age','poids','taille','imc','glycemie']){
-                if(s[v]){let st=s[v];html+=`<tr><td>${lb[v]}</td><td>${st.count}</td><td>${st.moyenne.toLocaleString('fr-FR')}</td><td>${st.ecart_type.toLocaleString('fr-FR')}</td><td>${st.minimum.toLocaleString('fr-FR')}</td><td>${st.Q1.toLocaleString('fr-FR')}</td><td>${st.Q2.toLocaleString('fr-FR')}</td><td>${st.Q3.toLocaleString('fr-FR')}</td><td>${st.maximum.toLocaleString('fr-FR')}</td></tr>`;}
-            }
-            if(s.pression){
-                html+=`<tr><td>Achats precedents</td><td>${s.pression.systolique.count}</td><td>${s.pression.systolique.moyenne.toLocaleString('fr-FR')}</td><td>${s.pression.systolique.ecart_type.toLocaleString('fr-FR')}</td><td colspan="5"></td></tr>`;
-                html+=`<tr><td>Remise (%)</td><td>${s.pression.diastolique.count}</td><td>${s.pression.diastolique.moyenne.toLocaleString('fr-FR')}</td><td>${s.pression.diastolique.ecart_type.toLocaleString('fr-FR')}</td><td colspan="5"></td></tr>`;
-            }
+            for(let v of['age','poids','taille','imc','glycemie']){if(s[v]){let st=s[v];html+=`<tr><td>${lb[v]}</td><td>${st.count}</td><td>${st.moyenne.toLocaleString('fr-FR')}</td><td>${st.ecart_type.toLocaleString('fr-FR')}</td><td>${st.minimum.toLocaleString('fr-FR')}</td><td>${st.Q1.toLocaleString('fr-FR')}</td><td>${st.Q2.toLocaleString('fr-FR')}</td><td>${st.Q3.toLocaleString('fr-FR')}</td><td>${st.maximum.toLocaleString('fr-FR')}</td></tr>`;}}
+            if(s.pression){html+=`<tr><td>Achats precedents</td><td>${s.pression.systolique.count}</td><td>${s.pression.systolique.moyenne.toLocaleString('fr-FR')}</td><td>${s.pression.systolique.ecart_type.toLocaleString('fr-FR')}</td><td colspan="5"></td></tr>`;html+=`<tr><td>Remise (%)</td><td>${s.pression.diastolique.count}</td><td>${s.pression.diastolique.moyenne.toLocaleString('fr-FR')}</td><td>${s.pression.diastolique.ecart_type.toLocaleString('fr-FR')}</td><td colspan="5"></td></tr>`;}
             html+='</tbody></table></div>';
-
-            // Sous-groupes
-            let male=pts.filter(p=>p.sexe==='Homme'),female=pts.filter(p=>p.sexe==='Femme');
-            let jeunes=pts.filter(p=>p.age&&p.age<30),adultes=pts.filter(p=>p.age&&p.age>=30&&p.age<=50),seniors=pts.filter(p=>p.age&&p.age>50);
+            let male=pts.filter(p=>p.sexe==='Homme'),female=pts.filter(p=>p.sexe==='Femme'),jeunes=pts.filter(p=>p.age&&p.age<30),adultes=pts.filter(p=>p.age&&p.age>=30&&p.age<=50),seniors=pts.filter(p=>p.age&&p.age>50);
             const mv=(arr,key)=>arr.length?Math.round(arr.reduce((a,b)=>a+b[key],0)/arr.length).toLocaleString('fr-FR'):'---';
-            
             html+='<div class="subgroup-title">Analyses par sous-groupes</div>';
             html+=`<div class="row"><div class="col-md-6"><div class="subgroup-card"><strong>Hommes (n=${male.length})</strong><br>Panier moyen: ${mv(male,'imc')} FCFA</div></div><div class="col-md-6"><div class="subgroup-card"><strong>Femmes (n=${female.length})</strong><br>Panier moyen: ${mv(female,'imc')} FCFA</div></div></div>`;
             html+=`<div class="row"><div class="col-md-4"><div class="subgroup-card"><strong>Jeunes (<30 ans):</strong> n=${jeunes.length}<br>Total moyen: ${mv(jeunes,'imc')} FCFA</div></div><div class="col-md-4"><div class="subgroup-card"><strong>Adultes (30-50):</strong> n=${adultes.length}<br>Total moyen: ${mv(adultes,'imc')} FCFA</div></div><div class="col-md-4"><div class="subgroup-card"><strong>Seniors (>50):</strong> n=${seniors.length}<br>Total moyen: ${mv(seniors,'imc')} FCFA</div></div></div>`;
-
-            // Mesures de forme
             html+='<div class="subgroup-title">Mesures de forme et position</div>';
             html+='<div class="table-responsive"><table class="stats-table"><thead><tr><th>Variable</th><th>Asymetrie</th><th>Kurtosis</th><th>IC 95%</th></tr></thead><tbody>';
-            for(let v of['age','imc','glycemie']){
-                let vals=pts.map(p=>p[v]).filter(x=>x!=null);
-                if(vals.length>1){
-                    let m=vals.reduce((a,b)=>a+b)/vals.length,sd=Math.sqrt(vals.map(x=>Math.pow(x-m,2)).reduce((a,b)=>a+b)/vals.length),skew=0,kurt=0;
-                    if(sd!==0){skew=vals.map(x=>Math.pow((x-m)/sd,3)).reduce((a,b)=>a+b)/vals.length;kurt=vals.map(x=>Math.pow((x-m)/sd,4)).reduce((a,b)=>a+b)/vals.length-3;}
-                    let icl=m-1.96*sd/Math.sqrt(vals.length),ich=m+1.96*sd/Math.sqrt(vals.length);
-                    html+=`<tr><td>${lb[v]}</td><td>${skew.toFixed(3)}</td><td>${kurt.toFixed(3)}</td><td>[${icl.toFixed(2)} ; ${ich.toFixed(2)}]</td></tr>`;
-                }
-            }
+            for(let v of['age','imc','glycemie']){let vals=pts.map(p=>p[v]).filter(x=>x!=null);if(vals.length>1){let m=vals.reduce((a,b)=>a+b)/vals.length,sd=Math.sqrt(vals.map(x=>Math.pow(x-m,2)).reduce((a,b)=>a+b)/vals.length),skew=0,kurt=0;if(sd!==0){skew=vals.map(x=>Math.pow((x-m)/sd,3)).reduce((a,b)=>a+b)/vals.length;kurt=vals.map(x=>Math.pow((x-m)/sd,4)).reduce((a,b)=>a+b)/vals.length-3;}let icl=m-1.96*sd/Math.sqrt(vals.length),ich=m+1.96*sd/Math.sqrt(vals.length);html+=`<tr><td>${lb[v]}</td><td>${skew.toFixed(3)}</td><td>${kurt.toFixed(3)}</td><td>[${icl.toFixed(2)} ; ${ich.toFixed(2)}]</td></tr>`;}}
             html+='</tbody></table></div>';
-
-            // Rapport automatique
-            let insights=[];
-            let imcV=pts.map(p=>p.imc).filter(x=>x);
+            let insights=[],imcV=pts.map(p=>p.imc).filter(x=>x);
             if(imcV.length){let m=imcV.reduce((a,b)=>a+b)/imcV.length;if(m>50000)insights.push('Panier moyen eleve (>50 000 FCFA). Clients a fort potentiel.');else if(m<10000)insights.push('Panier moyen faible (<10 000 FCFA). Opportunite d\'upsell.');}
             let glyV=pts.map(p=>p.glycemie).filter(x=>x);
             if(glyV.length){let m=glyV.reduce((a,b)=>a+b)/glyV.length;if(m<3)insights.push('Satisfaction client faible. Ameliorer le service.');else if(m>=4.5)insights.push('Excellente satisfaction client !');}
             if(!insights.length)insights.push('Aucune tendance particuliere detectee.');
-            
             html+='<div class="rapport-title">Rapport e-commerce automatique</div>';
             html+=`<div class="rapport-box">${insights.map(i=>`<div><i class="bi bi-lightbulb-fill"></i> ${i}</div>`).join('')}</div>`;
-
             container.innerHTML=html;
         }catch(e){container.innerHTML='<p class="text-danger">Erreur chargement stats.</p>';}
     }

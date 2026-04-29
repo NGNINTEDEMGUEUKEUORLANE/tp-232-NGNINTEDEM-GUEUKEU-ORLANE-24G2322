@@ -267,11 +267,10 @@ def pearson_corr(x, y):
         return 0
     return round(num / math.sqrt(den_x * den_y), 4)
 
-# ==================== NETTOYAGE ====================
+# ==================== NETTOYAGE (SECURISE) ====================
 @app.route("/api/nettoyer", methods=["POST"])
 def nettoyer_base():
     """Nettoie la base de donnees des valeurs erronees"""
-    # === SECURITE ===
     auth = request.headers.get("Authorization", "")
     if auth != f"Bearer {ADMIN_PASSWORD}":
         return jsonify({"error": "Acces refuse. Mot de passe admin requis."}), 401
@@ -337,7 +336,7 @@ def get_patients():
 
 @app.route("/api/patients", methods=["POST"])
 def add_patient():
-    """Ajoute une nouvelle vente"""
+    """Ajoute une nouvelle vente (publique)"""
     data = request.json
     if not data:
         return jsonify({"error": "Aucune donnee recue"}), 400
@@ -386,8 +385,7 @@ def add_patient():
 
 @app.route("/api/patients/<int:patient_id>", methods=["PUT"])
 def update_patient(patient_id):
-    """Modifie une vente existante"""
-    # === SECURITE ===
+    """Modifie une vente existante (securise)"""
     auth = request.headers.get("Authorization", "")
     if auth != f"Bearer {ADMIN_PASSWORD}":
         return jsonify({"error": "Acces refuse. Mot de passe admin requis."}), 401
@@ -397,13 +395,13 @@ def update_patient(patient_id):
         return jsonify({"error": "Aucune donnee recue"}), 400
     
     patients = load_patients()
-    index = next((i for i, p in enumerate(patients) if p["id"] == patient_id), None)  # ← patient_id corrigé
+    index = next((i for i, p in enumerate(patients) if p["id"] == patient_id), None)
     if index is None:
-        return jsonify({"error": "Vente non trouvee"}), 404  # ← parenthèse ajoutée
+        return jsonify({"error": "Vente non trouvee"}), 404
     
     erreurs = valider_donnees(data)
     if erreurs:
-        return jsonify({"error": " | ".join(erreurs)}), 400  # ← crochet corrigé
+        return jsonify({"error": " | ".join(erreurs)}), 400
     
     poids = float(data["poids"])
     taille = int(float(data["taille"]))
@@ -438,8 +436,7 @@ def update_patient(patient_id):
 
 @app.route("/api/patients/<int:patient_id>", methods=["DELETE"])
 def delete_patient(patient_id):
-    """Supprime une vente"""
-    # === SECURITE ===
+    """Supprime une vente (securise)"""
     auth = request.headers.get("Authorization", "")
     if auth != f"Bearer {ADMIN_PASSWORD}":
         return jsonify({"error": "Acces refuse. Mot de passe admin requis."}), 401
@@ -456,35 +453,26 @@ def delete_patient(patient_id):
 # ==================== CARROUSELS ====================
 @app.route("/api/carrousel/ventes", methods=["GET"])
 def carrousel_ventes():
-    """8 dernieres ventes pour le carrousel"""
     patients = load_patients()
-    if not patients:
-        return jsonify([])
-    
+    if not patients: return jsonify([])
     dernieres = sorted(patients, key=lambda x: x.get("date_enregistrement", ""), reverse=True)[:8]
     return jsonify([{
-        "id": p.get("id"),
-        "client": p.get("nom") or "Client anonyme",
-        "total": p.get("imc"),
-        "ville": p.get("commune") or "Non specifie",
+        "id": p.get("id"), "client": p.get("nom") or "Client anonyme",
+        "total": p.get("imc"), "ville": p.get("commune") or "Non specifie",
         "date": p.get("date_enregistrement", "")[:10] if p.get("date_enregistrement") else "",
         "paiement": p.get("paiement", "")
     } for p in dernieres])
 
 @app.route("/api/carrousel/stats", methods=["GET"])
 def carrousel_stats():
-    """Statistiques globales pour le carrousel"""
     patients = load_patients()
-    if not patients:
-        return jsonify([])
-    
+    if not patients: return jsonify([])
     total = len(patients)
     totals = [p.get("imc") for p in patients if p.get("imc")]
     satisf = [p.get("glycemie") for p in patients if p.get("glycemie")]
     ages = [p.get("age") for p in patients if p.get("age")]
     mm = len([p for p in patients if p.get("paiement") == "Mobile Money"])
     villes = len(set(p.get("commune") for p in patients if p.get("commune")))
-    
     return jsonify([
         {"icon": "bi-cart-check", "valeur": str(total), "label": "Ventes totales"},
         {"icon": "bi-cash-stack", "valeur": f"{round(sum(totals)/len(totals)):,} FCFA".replace(",", " ") if totals else "0 FCFA", "label": "Panier moyen"},
@@ -497,42 +485,27 @@ def carrousel_stats():
 
 @app.route("/api/carrousel/categories", methods=["GET"])
 def carrousel_categories():
-    """Categories populaires pour le carrousel"""
     patients = load_patients()
-    if not patients:
-        return jsonify([])
-    
+    if not patients: return jsonify([])
     cats = {}
     for p in patients:
         if p.get("pathologies"):
             for cat in p["pathologies"].split(","):
                 cat = cat.strip()
-                if cat and cat != "Autres":
-                    cats[cat] = cats.get(cat, 0) + 1
-    
+                if cat and cat != "Autres": cats[cat] = cats.get(cat, 0) + 1
     total = sum(cats.values())
-    icones = {
-        "Electronique": "bi-phone", "Mode": "bi-handbag",
-        "Alimentation": "bi-cart", "Maison": "bi-house",
-        "Beaute": "bi-palette", "Sport": "bi-trophy", "Livres": "bi-book"
-    }
-    
+    icones = {"Electronique": "bi-phone", "Mode": "bi-handbag", "Alimentation": "bi-cart",
+              "Maison": "bi-house", "Beaute": "bi-palette", "Sport": "bi-trophy", "Livres": "bi-book"}
     return jsonify([{
-        "icon": icones.get(cat, "bi-box"),
-        "nom": cat,
-        "pourcentage": round((count/total)*100) if total > 0 else 0,
-        "count": count
+        "icon": icones.get(cat, "bi-box"), "nom": cat,
+        "pourcentage": round((count/total)*100) if total > 0 else 0, "count": count
     } for cat, count in sorted(cats.items(), key=lambda x: x[1], reverse=True)])
 
 # ==================== STATISTIQUES ====================
 @app.route("/api/stats/descriptives", methods=["GET"])
 def stats_descriptives():
-    """Statistiques descriptives completes"""
     patients = load_patients()
-    
-    if not patients:
-        return jsonify({"total": 0, "message": "Aucune donnee"})
-
+    if not patients: return jsonify({"total": 0, "message": "Aucune donnee"})
     ages = [p["age"] for p in patients if p.get("age") is not None]
     poids = [p["poids"] for p in patients if p.get("poids")]
     tailles = [p["taille"] for p in patients if p.get("taille")]
@@ -540,261 +513,115 @@ def stats_descriptives():
     glycemies = [p["glycemie"] for p in patients if p.get("glycemie")]
     press_sys = [p["pression_sys"] for p in patients if p.get("pression_sys")]
     press_dia = [p["pression_dia"] for p in patients if p.get("pression_dia")]
-
     return jsonify({
-        "total": len(patients),
-        "age": compute_stats(ages),
-        "poids": compute_stats(poids),
-        "taille": compute_stats(tailles),
-        "imc": compute_stats(imcs),
-        "glycemie": compute_stats(glycemies),
-        "pression": {
-            "systolique": compute_stats(press_sys),
-            "diastolique": compute_stats(press_dia)
-        }
+        "total": len(patients), "age": compute_stats(ages), "poids": compute_stats(poids),
+        "taille": compute_stats(tailles), "imc": compute_stats(imcs), "glycemie": compute_stats(glycemies),
+        "pression": {"systolique": compute_stats(press_sys), "diastolique": compute_stats(press_dia)}
     })
 
 @app.route("/api/correlation", methods=["GET"])
 def correlation_matrix():
-    """Matrice de correlation de Pearson"""
     patients = load_patients()
-    
-    if len(patients) < 3:
-        return jsonify({"error": "Pas assez de donnees pour la matrice de correlation"})
-
+    if len(patients) < 3: return jsonify({"error": "Pas assez de donnees"})
     variables = ["age", "imc", "glycemie", "pression_sys", "pression_dia"]
     filtered = [p for p in patients if all(p.get(v) is not None for v in variables)]
-    
-    if len(filtered) < 3:
-        return jsonify({"error": "Donnees insuffisantes pour la correlation"})
-
+    if len(filtered) < 3: return jsonify({"error": "Donnees insuffisantes"})
     data_map = {v: [p[v] for p in filtered] for v in variables}
-    matrix = []
-    for v1 in variables:
-        row = []
-        for v2 in variables:
-            row.append(pearson_corr(data_map[v1], data_map[v2]))
-        matrix.append(row)
-    
+    matrix = [[pearson_corr(data_map[v1], data_map[v2]) for v2 in variables] for v1 in variables]
     return jsonify({"variables": variables, "matrix": matrix})
 
 @app.route("/api/stats/paiement", methods=["GET"])
 def stats_by_paiement():
-    """Statistiques par mode de paiement"""
     patients = load_patients()
-    if not patients:
-        return jsonify({"error": "Aucune donnee"}), 404
-    
+    if not patients: return jsonify({"error": "Aucune donnee"}), 404
     stats = {}
     for p in patients:
         mode = p.get("paiement", "Non specifie")
-        if mode not in stats:
-            stats[mode] = {"count": 0, "montant_total": 0, "satisfaction": []}
+        if mode not in stats: stats[mode] = {"count": 0, "montant_total": 0, "satisfaction": []}
         stats[mode]["count"] += 1
-        if p.get("imc"):
-            stats[mode]["montant_total"] += p["imc"]
-        if p.get("glycemie"):
-            stats[mode]["satisfaction"].append(p["glycemie"])
-    
-    result = {}
-    for mode, data in stats.items():
-        result[mode] = {
-            "count": data["count"],
-            "montant_total": round(data["montant_total"], 2),
-            "panier_moyen": round(data["montant_total"] / data["count"], 2) if data["count"] > 0 else 0,
-            "satisfaction_moyenne": round(sum(data["satisfaction"]) / len(data["satisfaction"]), 2) if data["satisfaction"] else None
-        }
-    return jsonify(result)
+        if p.get("imc"): stats[mode]["montant_total"] += p["imc"]
+        if p.get("glycemie"): stats[mode]["satisfaction"].append(p["glycemie"])
+    return jsonify({mode: {
+        "count": d["count"], "montant_total": round(d["montant_total"], 2),
+        "panier_moyen": round(d["montant_total"]/d["count"], 2) if d["count"] > 0 else 0,
+        "satisfaction_moyenne": round(sum(d["satisfaction"])/len(d["satisfaction"]), 2) if d["satisfaction"] else None
+    } for mode, d in stats.items()})
 
 @app.route("/api/stats/categories", methods=["GET"])
 def stats_by_categories():
-    """Statistiques par categorie de produits"""
     patients = load_patients()
-    if not patients:
-        return jsonify({"error": "Aucune donnee"}), 404
-    
+    if not patients: return jsonify({"error": "Aucune donnee"}), 404
     cats_stats = {}
     for p in patients:
         if p.get("pathologies"):
             for cat in p["pathologies"].split(","):
                 cat = cat.strip()
-                if cat not in cats_stats:
-                    cats_stats[cat] = {"count": 0, "montant_total": 0}
+                if cat not in cats_stats: cats_stats[cat] = {"count": 0, "montant_total": 0}
                 cats_stats[cat]["count"] += 1
-                if p.get("imc"):
-                    cats_stats[cat]["montant_total"] += p["imc"]
-    
-    result = {}
-    for cat, data in cats_stats.items():
-        result[cat] = {
-            "count": data["count"],
-            "montant_total": round(data["montant_total"], 2),
-            "panier_moyen": round(data["montant_total"] / data["count"], 2) if data["count"] > 0 else 0
-        }
-    return jsonify(result)
+                if p.get("imc"): cats_stats[cat]["montant_total"] += p["imc"]
+    return jsonify({cat: {
+        "count": d["count"], "montant_total": round(d["montant_total"], 2),
+        "panier_moyen": round(d["montant_total"]/d["count"], 2) if d["count"] > 0 else 0
+    } for cat, d in cats_stats.items()})
 
 @app.route("/api/stats/age", methods=["GET"])
 def stats_by_age():
-    """Statistiques par tranche d'age"""
     patients = load_patients()
-    if not patients:
-        return jsonify({"error": "Aucune donnee"}), 404
-    
+    if not patients: return jsonify({"error": "Aucune donnee"}), 404
     tranches = {"18-25": [0, 0], "26-35": [0, 0], "36-50": [0, 0], "51+": [0, 0]}
     for p in patients:
         age = p.get("age")
         if age:
-            if age <= 25:
-                t = "18-25"
-            elif age <= 35:
-                t = "26-35"
-            elif age <= 50:
-                t = "36-50"
-            else:
-                t = "51+"
+            t = "18-25" if age <= 25 else "26-35" if age <= 35 else "36-50" if age <= 50 else "51+"
             tranches[t][0] += 1
-            if p.get("imc"):
-                tranches[t][1] += p["imc"]
-    
-    result = {}
-    for t, (c, mt) in tranches.items():
-        result[t] = {
-            "count": c,
-            "montant_total": round(mt, 2),
-            "panier_moyen": round(mt / c, 2) if c > 0 else 0
-        }
-    return jsonify(result)
+            if p.get("imc"): tranches[t][1] += p["imc"]
+    return jsonify({t: {"count": c, "montant_total": round(mt, 2), "panier_moyen": round(mt/c, 2) if c > 0 else 0} for t, (c, mt) in tranches.items()})
 
 @app.route("/api/stats/ville", methods=["GET"])
 def stats_by_ville():
-    """Top 10 des villes par nombre de ventes"""
     patients = load_patients()
-    if not patients:
-        return jsonify({"error": "Aucune donnee"}), 404
-    
+    if not patients: return jsonify({"error": "Aucune donnee"}), 404
     villes = {}
     for p in patients:
-        ville = p.get("commune", "").strip()
-        if not ville:
-            ville = "Non specifie"
-        if ville not in villes:
-            villes[ville] = {"count": 0, "montant_total": 0}
-        villes[ville]["count"] += 1
-        if p.get("imc"):
-            villes[ville]["montant_total"] += p["imc"]
-    
-    top_villes = dict(sorted(villes.items(), key=lambda x: x[1]["count"], reverse=True)[:10])
-    
-    result = {}
-    for ville, data in top_villes.items():
-        result[ville] = {
-            "count": data["count"],
-            "montant_total": round(data["montant_total"], 2),
-            "panier_moyen": round(data["montant_total"] / data["count"], 2) if data["count"] > 0 else 0
-        }
-    return jsonify(result)
+        v = p.get("commune", "").strip() or "Non specifie"
+        if v not in villes: villes[v] = {"count": 0, "montant_total": 0}
+        villes[v]["count"] += 1
+        if p.get("imc"): villes[v]["montant_total"] += p["imc"]
+    top = dict(sorted(villes.items(), key=lambda x: x[1]["count"], reverse=True)[:10])
+    return jsonify({v: {"count": d["count"], "montant_total": round(d["montant_total"], 2), "panier_moyen": round(d["montant_total"]/d["count"], 2) if d["count"] > 0 else 0} for v, d in top.items()})
 
 # ==================== EXPORT CSV ====================
 @app.route("/api/export/csv", methods=["GET"])
 def export_csv():
-    """Exporte toutes les ventes en CSV"""
     patients = load_patients()
-    
-    if not patients:
-        return "Aucune donnee a exporter", 404
-
+    if not patients: return "Aucune donnee a exporter", 404
     output = io.StringIO()
     writer = csv.writer(output)
-    writer.writerow([
-        "id", "client", "age", "sexe", "prix_unitaire_FCFA", "quantite",
-        "total_commande_FCFA", "satisfaction", "achats_precedents", "remise_pct",
-        "categories", "ville", "paiement", "date_enregistrement"
-    ])
-    
+    writer.writerow(["id","client","age","sexe","prix_unitaire_FCFA","quantite","total_commande_FCFA",
+                     "satisfaction","achats_precedents","remise_pct","categories","ville","paiement","date"])
     for p in patients:
-        writer.writerow([
-            p.get("id", ""), p.get("nom", ""), p.get("age", ""),
-            p.get("sexe", ""), p.get("poids", ""), p.get("taille", ""),
-            p.get("imc", ""), p.get("glycemie", ""), p.get("pression_sys", ""),
-            p.get("pression_dia", ""), p.get("pathologies", ""),
-            p.get("commune", ""), p.get("paiement", ""),
-            p.get("date_enregistrement", "")
-        ])
-    
+        writer.writerow([p.get("id"), p.get("nom"), p.get("age"), p.get("sexe"), p.get("poids"),
+                        p.get("taille"), p.get("imc"), p.get("glycemie"), p.get("pression_sys"),
+                        p.get("pression_dia"), p.get("pathologies"), p.get("commune"), p.get("paiement"),
+                        p.get("date_enregistrement")])
     output.seek(0)
-    return send_file(
-        io.BytesIO(output.getvalue().encode('utf-8')),
-        mimetype='text/csv',
-        as_attachment=True,
-        download_name='export_ventes_shopdata.csv'
-    )
+    return send_file(io.BytesIO(output.getvalue().encode('utf-8')), mimetype='text/csv',
+                     as_attachment=True, download_name='export_ventes_shopdata.csv')
 
 # ==================== PAGE D'ACCUEIL ====================
 @app.route("/")
 def serve_frontend():
-    """Sert le fichier HTML principal"""
     try:
         with open("index.html", "r", encoding="utf-8") as f:
             return f.read()
     except FileNotFoundError:
-        return """
-        <!DOCTYPE html>
-        <html lang="fr">
-        <head><meta charset="UTF-8"><title>ShopData Cam - API E-commerce</title>
-        <style>
-            body{font-family:Arial;margin:40px;background:#e8f0fe}
-            h1{color:#1a73e8}h2{color:#4285f4;margin-top:30px}
-            code{background:#fff;padding:3px 8px;border-radius:4px;border:1px solid #ddd}
-            ul{line-height:2}
-            .card{background:white;border-radius:12px;padding:20px;margin:20px 0;box-shadow:0 4px 12px rgba(0,0,0,0.1)}
-        </style></head>
-        <body>
-            <h1>ShopData Cam - API E-commerce</h1>
-            <p>Fichier <code>index.html</code> non trouve.</p>
-            <div class="card">
-            <h2>Endpoints disponibles :</h2>
-            <ul>
-                <li><code>GET /api/patients</code> - Liste des ventes</li>
-                <li><code>POST /api/patients</code> - Ajouter une vente</li>
-                <li><code>PUT /api/patients/&lt;id&gt;</code> - Modifier une vente</li>
-                <li><code>DELETE /api/patients/&lt;id&gt;</code> - Supprimer une vente</li>
-                <li><code>POST /api/nettoyer</code> - Nettoyer la base</li>
-                <li><code>GET /api/carrousel/ventes</code> - Dernieres ventes</li>
-                <li><code>GET /api/carrousel/stats</code> - Statistiques</li>
-                <li><code>GET /api/carrousel/categories</code> - Categories populaires</li>
-                <li><code>GET /api/stats/descriptives</code> - Statistiques descriptives</li>
-                <li><code>GET /api/correlation</code> - Matrice de correlation</li>
-                <li><code>GET /api/export/csv</code> - Export CSV</li>
-                <li><code>GET /api/stats/paiement</code> - Stats par paiement</li>
-                <li><code>GET /api/stats/categories</code> - Stats par categorie</li>
-                <li><code>GET /api/stats/age</code> - Stats par age</li>
-                <li><code>GET /api/stats/ville</code> - Top 10 villes</li>
-            </ul>
-            </div>
-        </body></html>""", 200
+        return "<h1>ShopData Cam - API E-commerce</h1><p>Fichier index.html non trouve.</p>", 200
 
 # ==================== LANCEMENT ====================
 if __name__ == "__main__":
     print("=" * 60)
     print("  ShopData Cam - Serveur E-commerce")
     print("  http://localhost:5000")
-    print("=" * 60)
-    print("  Routes disponibles :")
-    print("    GET    /api/patients")
-    print("    POST   /api/patients")
-    print("    PUT    /api/patients/<id>")
-    print("    DELETE /api/patients/<id>")
-    print("    POST   /api/nettoyer")
-    print("    GET    /api/carrousel/ventes")
-    print("    GET    /api/carrousel/stats")
-    print("    GET    /api/carrousel/categories")
-    print("    GET    /api/stats/descriptives")
-    print("    GET    /api/correlation")
-    print("    GET    /api/export/csv")
-    print("    GET    /api/stats/paiement")
-    print("    GET    /api/stats/categories")
-    print("    GET    /api/stats/age")
-    print("    GET    /api/stats/ville")
     print("=" * 60)
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port, debug=False)
