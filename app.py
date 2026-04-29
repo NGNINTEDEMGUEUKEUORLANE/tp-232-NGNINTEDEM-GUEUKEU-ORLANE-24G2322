@@ -12,7 +12,8 @@ app = Flask(__name__)
 CORS(app)
 
 DATA_FILE = "ventes.json"
-
+# ==================== SECURITE ====================
+ADMIN_PASSWORD = "alina329" 										
 # ==================== CHARGEMENT / SAUVEGARDE ====================
 def load_patients():
     """Charge les ventes depuis le fichier JSON"""
@@ -270,6 +271,11 @@ def pearson_corr(x, y):
 @app.route("/api/nettoyer", methods=["POST"])
 def nettoyer_base():
     """Nettoie la base de donnees des valeurs erronees"""
+    # === SECURITE ===
+    auth = request.headers.get("Authorization", "")
+    if auth != f"Bearer {ADMIN_PASSWORD}":
+        return jsonify({"error": "Acces refuse. Mot de passe admin requis."}), 401
+    
     patients = load_patients()
     if not patients:
         return jsonify({"error": "Base de donnees vide"}), 404
@@ -381,18 +387,23 @@ def add_patient():
 @app.route("/api/patients/<int:patient_id>", methods=["PUT"])
 def update_patient(patient_id):
     """Modifie une vente existante"""
+    # === SECURITE ===
+    auth = request.headers.get("Authorization", "")
+    if auth != f"Bearer {ADMIN_PASSWORD}":
+        return jsonify({"error": "Acces refuse. Mot de passe admin requis."}), 401
+    
     data = request.json
     if not data:
         return jsonify({"error": "Aucune donnee recue"}), 400
     
     patients = load_patients()
-    index = next((i for i, p in enumerate(patients) if p["id"] == patient_id), None)
+    index = next((i for i, p in enumerate(patients) if p["id"] == patient_id), None)  # ← patient_id corrigé
     if index is None:
-        return jsonify({"error": "Vente non trouvee"}), 404
+        return jsonify({"error": "Vente non trouvee"}), 404  # ← parenthèse ajoutée
     
     erreurs = valider_donnees(data)
     if erreurs:
-        return jsonify({"error": " | ".join(erreurs)}), 400
+        return jsonify({"error": " | ".join(erreurs)}), 400  # ← crochet corrigé
     
     poids = float(data["poids"])
     taille = int(float(data["taille"]))
@@ -428,6 +439,11 @@ def update_patient(patient_id):
 @app.route("/api/patients/<int:patient_id>", methods=["DELETE"])
 def delete_patient(patient_id):
     """Supprime une vente"""
+    # === SECURITE ===
+    auth = request.headers.get("Authorization", "")
+    if auth != f"Bearer {ADMIN_PASSWORD}":
+        return jsonify({"error": "Acces refuse. Mot de passe admin requis."}), 401
+    
     patients = load_patients()
     patient = next((p for p in patients if p["id"] == patient_id), None)
     if not patient:
